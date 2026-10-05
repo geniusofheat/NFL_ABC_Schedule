@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monday Night Football on ABC – 2026 Schedule</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f6efdc; --panel:#fbf6e8; --ink:#14233f; --ink-soft:#4a5870;
+  --crimson:#b3202f; --teal:#1f7a78; --gold:#c79a2b; --line:#14233f;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,system-ui,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;padding:16px 14px 40px}
+
+/* ---------- Title marks ---------- */
+.marks{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  border:3px solid var(--line);background:var(--panel);padding:14px 14px;box-shadow:5px 5px 0 var(--gold)}
+.marks img{display:block;height:clamp(56px,16vw,84px);width:auto;max-width:46%;object-fit:contain}
+.marks .logo-mnf{margin-right:auto}
+.marks .logo-nfl{margin-left:auto}
+
+h1{font-family:Fraunces,Georgia,serif;font-weight:800;font-size:26px;margin:20px 0 4px;letter-spacing:-.01em}
+.sub{margin:0 0 14px;color:var(--ink-soft);font-size:14px}
+
+/* ---------- Next game ---------- */
+.next{border:3px solid var(--line);background:var(--ink);color:var(--paper);padding:14px;margin-bottom:18px;position:relative}
+.next .tag{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:12px;color:var(--gold);letter-spacing:.06em}
+.next .teams{font-family:Fraunces,Georgia,serif;font-weight:800;font-size:24px;margin:4px 0 2px}
+.next .when{font-size:14px;opacity:.9}
+.next .count{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:22px;color:#fff;margin-top:10px}
+.next .count span{color:var(--gold)}
+
+/* ---------- Game cards ---------- */
+.games{display:grid;gap:12px}
+.card{border:2px solid var(--line);background:var(--panel);display:grid;grid-template-columns:78px 1fr}
+.date{background:var(--ink);color:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px;text-align:center}
+.date .m{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:13px;color:var(--gold)}
+.date .d{font-family:Fraunces,Georgia,serif;font-weight:800;font-size:32px;line-height:1}
+.date .w{font-size:11px;opacity:.8;margin-top:4px}
+.body{padding:10px 12px}
+.matchup{font-family:Fraunces,Georgia,serif;font-weight:800;font-size:19px;line-height:1.2}
+.matchup .at{color:var(--crimson);font-family:"JetBrains Mono",monospace;font-weight:700;font-size:15px;padding:0 4px}
+.venue{font-size:13px;color:var(--ink-soft);margin:3px 0 8px}
+.times{display:flex;flex-wrap:wrap;gap:6px}
+.t{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:12px;border:1.5px solid var(--line);padding:3px 6px;background:#fff}
+.t b{color:var(--teal)}
+.badge{display:inline-block;margin-top:8px;font-family:"JetBrains Mono",monospace;font-weight:700;font-size:11px;
+  background:var(--teal);color:#fff;padding:3px 7px;letter-spacing:.04em}
+.card.done{opacity:.45}
+.card.done .badge{background:var(--ink-soft)}
+.card.next-card{box-shadow:4px 4px 0 var(--crimson)}
+
+/* ---------- Notes ---------- */
+.notes{margin-top:20px;border:2px dashed var(--line);padding:12px 14px;background:var(--panel)}
+.notes h2{font-family:Fraunces,Georgia,serif;font-size:17px;margin:0 0 6px}
+.notes p{margin:0 0 6px;font-size:14px;line-height:1.45}
+.notes p:last-child{margin:0}
+footer{margin-top:16px;font-size:12px;color:var(--ink-soft)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="marks" role="banner">
+    <img class="logo-mnf" src="mnf.png" alt="Monday Night Football">
+    <img class="logo-nfl" src="nfl.jpg" alt="NFL">
+  </div>
+
+  <h1>Monday Night Football on ABC</h1>
+  <p class="sub">2026 season, ABC games only (ESPN-only games left out).</p>
+
+  <div class="next" id="next" hidden>
+    <div class="tag">NEXT ON ABC</div>
+    <div class="teams" id="nextTeams"></div>
+    <div class="when" id="nextWhen"></div>
+    <div class="count" id="nextCount"></div>
+  </div>
+
+  <div class="games" id="games"></div>
+
+  <div class="notes">
+    <h2>Good to know</h2>
+    <p>Every ABC game is also on ESPN at the same time, so you only need ABC.</p>
+    <p>Kickoff is 8:15 PM Eastern for all of these games.</p>
+    <p>Tonight's Falcons at Saints game (Oct 5) is ESPN only, so it's not listed.</p>
+    <p>ABC also shows a Saturday doubleheader on Jan 9, 2027 (4:30 PM and 8:00 PM ET), matchups to be announced.</p>
+  </div>
+  <footer>Times and networks can change, so double-check your local ABC listings.</footer>
+</div>
+
+<script>
+// kickoff = 8:15 PM Eastern, stored in UTC (EDT until Nov 1, EST after)
+var GAMES = [
+  {wk:5,  utc:"2026-10-13T00:15:00Z", away:"Buffalo Bills",       home:"Los Angeles Rams",   venue:"SoFi Stadium, Inglewood, CA"},
+  {wk:6,  utc:"2026-10-20T00:15:00Z", away:"Washington Commanders",home:"San Francisco 49ers",venue:"Levi's Stadium, Santa Clara, CA"},
+  {wk:7,  utc:"2026-10-27T00:15:00Z", away:"Dallas Cowboys",      home:"Philadelphia Eagles",venue:"Lincoln Financial Field, Philadelphia, PA"},
+  {wk:9,  utc:"2026-11-10T01:15:00Z", away:"Buffalo Bills",       home:"Minnesota Vikings",  venue:"U.S. Bank Stadium, Minneapolis, MN"},
+  {wk:13, utc:"2026-12-08T01:15:00Z", away:"Dallas Cowboys",      home:"Seattle Seahawks",   venue:"Lumen Field, Seattle, WA"},
+  {wk:15, utc:"2026-12-22T01:15:00Z", away:"New England Patriots",home:"Kansas City Chiefs", venue:"Arrowhead Stadium, Kansas City, MO"}
+];
+var MON = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+var GAME_LEN = 3.5 * 3600 * 1000;
+
+// Show the Eastern calendar date (the Monday) regardless of the phone's time zone
+function easternParts(iso){
+  var d = new Date(iso);
+  var f = new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",month:"numeric",day:"numeric"}).formatToParts(d);
+  var o = {}; f.forEach(function(p){o[p.type]=p.value});
+  return {m:parseInt(o.month,10)-1, d:parseInt(o.day,10)};
+}
+function localTime(iso){
+  return new Date(iso).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
+}
+
+var now = Date.now();
+var nextIdx = -1;
+GAMES.forEach(function(g,i){
+  g.t = new Date(g.utc).getTime();
+  if(nextIdx < 0 && now < g.t + GAME_LEN) nextIdx = i;
+});
+
+var html = "";
+GAMES.forEach(function(g,i){
+  var p = easternParts(g.utc);
+  var done = now >= g.t + GAME_LEN;
+  var cls = "card" + (done ? " done" : "") + (i===nextIdx ? " next-card" : "");
+  html += '<div class="'+cls+'">' +
+    '<div class="date"><div class="m">'+MON[p.m]+'</div><div class="d">'+p.d+'</div><div class="w">Week '+g.wk+'</div></div>' +
+    '<div class="body">' +
+      '<div class="matchup">'+g.away+'<span class="at">@</span>'+g.home+'</div>' +
+      '<div class="venue">'+g.venue+'</div>' +
+      '<div class="times"><span class="t"><b>8:15</b> ET</span><span class="t">7:15 CT</span><span class="t">6:15 MT</span><span class="t">5:15 PT</span></div>' +
+      '<span class="badge">'+(done ? "DONE" : "ON ABC")+'</span>' +
+    '</div></div>';
+});
+document.getElementById("games").innerHTML = html;
+
+if(nextIdx >= 0){
+  var g = GAMES[nextIdx], p = easternParts(g.utc);
+  document.getElementById("next").hidden = false;
+  document.getElementById("nextTeams").textContent = g.away + " @ " + g.home;
+  document.getElementById("nextWhen").textContent = "Mon, " + MON[p.m] + " " + p.d + " · 8:15 PM ET (" + localTime(g.utc) + " your time)";
+  var el = document.getElementById("nextCount");
+  function tick(){
+    var ms = g.t - Date.now();
+    if(ms <= 0){ el.innerHTML = "<span>Live now</span> on ABC"; return; }
+    var s = Math.floor(ms/1000), d = Math.floor(s/86400); s -= d*86400;
+    var h = Math.floor(s/3600); s -= h*3600; var m = Math.floor(s/60);
+    el.innerHTML = "<span>"+d+"</span>d <span>"+h+"</span>h <span>"+m+"</span>m";
+  }
+  tick(); setInterval(tick, 30000);
+}
+</script>
+</body>
+</html>
